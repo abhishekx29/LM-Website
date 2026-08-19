@@ -5226,6 +5226,7 @@ div[class*=col]:nth-of-type(4n + 4) .feature-item .feature-content .cate {
 }
 
 .contact-form .form-group input,
+.contact-form .form-group select,
 .contact-form .form-group textarea {
   width: 100%;
   border: 1px solid #e5ebf2;
@@ -5239,6 +5240,7 @@ div[class*=col]:nth-of-type(4n + 4) .feature-item .feature-content .cate {
 }
 
 .contact-form .form-group input:focus,
+.contact-form .form-group select:focus,
 .contact-form .form-group textarea:focus {
   outline: none;
   border-color: rgba(39, 77, 150, 0.8);
@@ -6541,6 +6543,23 @@ div[class*=col]:nth-of-type(6n + 6) .product-list-item .product-thumb {
 .modal .modal-dialog .modal-content .modal-body {
   background: #f6faf9;
   border-radius: 8px;
+}
+#enquiryModal .modal-content {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+#enquiryModal .modal-header {
+  border-bottom: 1px solid #e5ebf2;
+  padding: 20px 24px;
+}
+#enquiryModal .modal-header .title {
+  margin: 0;
+  color: #1f2d3d;
+}
+#enquiryModal .modal-body {
+  border-radius: 0;
+  padding: 24px;
 }
 
 .product-details-inner .slider-for .thumb img {

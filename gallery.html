@@ -214,7 +214,7 @@
     <!-- ===========Header Cart=========== -->
 
     <!-- ==========Banner Section Starts Here========== -->
-    <section
+    <!-- <section
       class="page-header bg_img"
       data-background="assets/images/banner/page-header.jpg"
     >
@@ -229,7 +229,7 @@
           </ul>
         </div>
       </div>
-    </section>
+    </section> -->
     <!-- ==========Banner Section Ends Here========== -->
 
     <!-- ==========Gallery Introduction Section Starts Here========== -->
@@ -292,7 +292,7 @@
           </article>
         </div>
 
-        <div class="lm-about-lower">
+        <!-- <div class="lm-about-lower">
           <div class="lm-why-panel">
             <span class="cate">Snapshots of school life</span>
             <h3>Laughter, learning, and love in every frame.</h3>
@@ -306,7 +306,7 @@
             <span class="cate">Explore the moments</span>
             <h3>Every day has a story worth remembering.</h3>
           </div>
-        </div>
+        </div> -->
       </div>
     </section>
     <!-- ==========Gallery Introduction Section Ends Here========== -->
@@ -561,7 +561,11 @@
             </div>
           </div>
           <div class="col-md-4 text-md-right">
-            <a href="#" class="custom-button theme-one"
+            <a
+              href="#"
+              class="custom-button theme-one"
+              data-bs-toggle="modal"
+              data-bs-target="#enquiryModal"
               ><span>Get Started Now</span></a
             >
           </div>
@@ -569,6 +573,84 @@
       </div>
     </section>
     <!-- ==========Call In Action Section Ends Here========== -->
+
+    <!-- ==========Admission Enquiry Modal Starts Here========== -->
+    <div
+      class="modal fade"
+      id="enquiryModal"
+      tabindex="-1"
+      aria-labelledby="enquiryModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="title" id="enquiryModalLabel">Admission Enquiry</h4>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form class="contact-form" id="enquiry_form_submit">
+              <div class="form-group">
+                <label for="enq_name">Child's Name</label>
+                <input
+                  type="text"
+                  id="enq_name"
+                  name="name"
+                  placeholder="Enter child's name"
+                />
+              </div>
+              <div class="form-group">
+                <label for="enq_phone">Phone</label>
+                <input
+                  type="text"
+                  id="enq_phone"
+                  name="phone"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+              <div class="form-group">
+                <label for="enq_email">Email Address</label>
+                <input
+                  type="email"
+                  id="enq_email"
+                  name="email"
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div class="form-group">
+                <label for="enq_program">Program Interested In</label>
+                <select id="enq_program" name="program">
+                  <option value="">Select a program</option>
+                  <option value="Developing Roots">Developing Roots</option>
+                  <option value="Emerging Wings">Emerging Wings</option>
+                  <option value="Ready to Fly 1">Ready to Fly 1</option>
+                  <option value="Ready to Fly 2">Ready to Fly 2</option>
+                </select>
+              </div>
+              <div class="form-group form-group-full">
+                <label for="enq_message">Your Message</label>
+                <textarea
+                  name="message"
+                  id="enq_message"
+                  placeholder="Tell us a little about your needs..."
+                ></textarea>
+              </div>
+              <div class="form-group form-group-full text-center">
+                <button class="custom-button" type="submit">
+                  <span>Submit Enquiry</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ==========Admission Enquiry Modal Ends Here========== -->
 
     <!-- ==========Footer Section Starts Here========== -->
     <footer class="bg_img" data-background="assets/images/footer/footer-bg.jpg">

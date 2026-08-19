@@ -4241,6 +4241,15 @@ div[class*=col]:nth-of-type(4n + 4) .teacher-item .teacher-thumb::before {
   flex: 0 0 440px;
   max-width: 440px;
 }
+@media (max-width: 575px) {
+  .principal-spotlight {
+    padding: 20px;
+  }
+  .principal-spotlight .principal-thumb {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
 .principal-spotlight .principal-thumb img {
   width: 100%;
   border-radius: 30px;

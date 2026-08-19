@@ -4523,10 +4523,7 @@ div[class*=col]:nth-of-type(4n + 4) .feature-item .feature-content .cate {
 
 @media (min-width: 992px) {
   .contact-area {
-    position: absolute;
-    left: 0;
-    bottom: 30px;
-    right: 0;
+    position: relative;
   }
   .contact-area .contact-wrapper {
     border-radius: 10px;
@@ -4543,7 +4540,7 @@ div[class*=col]:nth-of-type(4n + 4) .feature-item .feature-content .cate {
 }
 @media (max-width: 991px) {
   .contact-area {
-    margin-top: -220px;
+    margin-top: 0;
   }
 }
 
@@ -7475,6 +7472,7 @@ div[class*=col]:nth-of-type(6n + 6) .product-list-item .product-thumb {
   background: #fff;
   border-radius: 30px;
   overflow: hidden;
+  margin-bottom: 20px;
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }

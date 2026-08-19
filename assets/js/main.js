@@ -16,6 +16,40 @@
     // filter functions
     var $grid = $(".class-wrapper");
     var filterFns = {};
+    var $pagination = $(".default-pagination");
+    var itemsPerPage = 3;
+    var currentFilter = '*';
+    var currentPage = 1;
+
+    function getFilteredItems() {
+      return $grid.find('.class-inner').filter(function () {
+        return currentFilter === '*' || $(this).is(currentFilter);
+      });
+    }
+
+    function updatePagination() {
+      var $items = getFilteredItems();
+      var pageCount = Math.max(1, Math.ceil($items.length / itemsPerPage));
+      currentPage = Math.min(currentPage, pageCount);
+      var firstItem = (currentPage - 1) * itemsPerPage;
+      var visibleItems = $items.slice(firstItem, firstItem + itemsPerPage).toArray();
+
+      $grid.find('.class-inner').removeClass('pagination-visible');
+      $(visibleItems).addClass('pagination-visible');
+      $grid.isotope({ filter: '.pagination-visible' });
+
+      $pagination.find('li').remove();
+      $('<li><a href="#" data-page="previous"><i class="fas fa-angle-left"></i></a></li>')
+        .appendTo($pagination);
+      for (var page = 1; page <= pageCount; page++) {
+        $('<li><a href="#" data-page="' + page + '">' + ('0' + page).slice(-2) + '</a></li>')
+          .appendTo($pagination);
+      }
+      $('<li><a href="#" data-page="next"><i class="fas fa-angle-right"></i></a></li>')
+        .appendTo($pagination);
+      $pagination.find('a[data-page="' + currentPage + '"]').addClass('active');
+    }
+
     $grid.isotope({
       itemSelector: '.class-inner',
       masonry: {
@@ -24,12 +58,18 @@
     });
     // bind filter button click
     $('ul.filter').on('click', 'li', function () {
-      var filterValue = $(this).attr('data-filter');
+      currentFilter = $(this).attr('data-filter');
+      currentPage = 1;
+      var filterValue = currentFilter;
       // use filterFn if matches value
       filterValue = filterFns[filterValue] || filterValue;
-      $grid.isotope({
-        filter: filterValue
-      });
+      if ($pagination.length) {
+        updatePagination();
+      } else {
+        $grid.isotope({
+          filter: filterValue
+        });
+      }
     });
     // change is-checked class on buttons
     $('ul.filter').each(function (i, buttonGroup) {
@@ -39,6 +79,24 @@
         $(this).addClass('active');
       });
     });
+
+    if ($pagination.length) {
+      $pagination.on('click', 'a', function (event) {
+        event.preventDefault();
+        var requestedPage = $(this).data('page');
+        var pageCount = Math.max(1, Math.ceil(getFilteredItems().length / itemsPerPage));
+
+        if (requestedPage === 'previous') {
+          currentPage = Math.max(1, currentPage - 1);
+        } else if (requestedPage === 'next') {
+          currentPage = Math.min(pageCount, currentPage + 1);
+        } else {
+          currentPage = Number(requestedPage);
+        }
+        updatePagination();
+      });
+      updatePagination();
+    }
   }
   // Gallery Masonary
   function galleryMasonaryTwo() {

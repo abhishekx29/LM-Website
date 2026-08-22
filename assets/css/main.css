@@ -1726,9 +1726,9 @@ input[type=submit] {
 header {
   position: relative;
   z-index: 99;
-  -webkit-transition: all ease 0.3s;
-  -moz-transition: all ease 0.3s;
-  transition: all ease 0.3s;
+  -webkit-transition: box-shadow ease 0.3s, border-color ease 0.3s;
+  -moz-transition: box-shadow ease 0.3s, border-color ease 0.3s;
+  transition: box-shadow ease 0.3s, border-color ease 0.3s;
 }
 header.header-fixed {
   position: fixed;

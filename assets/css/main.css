@@ -1264,13 +1264,15 @@ input[type=submit] {
 }
 
 .footer-widget {
-  margin-bottom: 50px;
+  margin-bottom: 140px;
 }
 .footer-widget .title {
   margin-bottom: 24px;
 }
 .footer-widget.widget-about {
   text-align: center;
+  margin-top: 0;
+  transform: translateY(-50px) !important;
 }
 .footer-widget.widget-about .title {
   font-size: 28px;
@@ -1315,7 +1317,7 @@ input[type=submit] {
 .whatsapp-contact {
   position: fixed;
   left: 20px;
-  bottom: 100px;
+  bottom: 10px;
   z-index: 10000;
   display: grid;
   width: 56px;
@@ -1355,7 +1357,7 @@ input[type=submit] {
 @media (max-width: 575px) {
   .whatsapp-contact {
     left: 12px;
-    bottom: 82px;
+    bottom: -8px;
     width: 52px;
     height: 52px;
   }
@@ -2114,18 +2116,20 @@ header.header-fixed {
   cursor: pointer;
   width: 25px;
   height: 20px;
+  overflow: hidden;
 }
 .header-bar span {
   position: absolute;
   display: inline-block;
   height: 3px;
   width: 100%;
-  transform-origin: center;
-  -webkit-transition: all ease 0.3s;
-  -moz-transition: all ease 0.3s;
-  transition: all ease 0.3s;
+  transform-origin: center center;
+  -webkit-transition: transform 0.3s ease, opacity 0.3s ease;
+  -moz-transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
   background-color: #0e2c53;
   left: 0;
+  will-change: transform, opacity;
 }
 .header-bar span:first-child {
   top: 0;
@@ -8289,9 +8293,10 @@ div[class*=col]:nth-of-type(6n + 6) .product-list-item .product-thumb {
   text-align: center;
   font-size: 16px;
   cursor: pointer;
-  -webkit-transition: all ease 0.3s;
-  -moz-transition: all ease 0.3s;
-  transition: all ease 0.3s;
+  -webkit-transition: transform 0.3s ease, background-color 0.3s ease;
+  -moz-transition: transform 0.3s ease, background-color 0.3s ease;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  will-change: transform;
 }
 @media (min-width: 576px) {
   .scrollToTop {
@@ -8304,9 +8309,6 @@ div[class*=col]:nth-of-type(6n + 6) .product-list-item .product-thumb {
   -webkit-transform: translateY(0);
   -ms-transform: translateY(0);
   transform: translateY(0);
-  animation: bounceInDown 2s;
-  -webkit-animation: bounceInDown 2s;
-  -moz-animation: bounceInDown 2s;
 }
 
 .scrollToTop img {

@@ -1316,7 +1316,7 @@ input[type=submit] {
   position: fixed;
   left: 20px;
   bottom: 100px;
-  z-index: 999;
+  z-index: 10000;
   display: grid;
   width: 56px;
   height: 56px;
@@ -1842,11 +1842,7 @@ header.header-fixed {
 .header-wrapper {
   justify-content: space-between;
   align-items: center;
-}
-@media (min-width: 576px) {
-  .header-wrapper {
-    position: relative;
-  }
+  position: relative;
 }
 .header-wrapper .logo a {
   display: block;
@@ -2066,6 +2062,7 @@ header.header-fixed {
     position: absolute;
     top: 100%;
     left: 0;
+    z-index: 99;
     background: #fff;
     overflow: auto;
     max-height: 400px;
@@ -3520,6 +3517,8 @@ div[class*=col]:nth-of-type(6n + 4) .counter-item.round-style::before {
 }
 .class-item .class-content .class-meta .class-author .thumb img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .class-item .class-content .class-meta .class-author .content {
   width: calc(100% - 40px);
@@ -4376,10 +4375,13 @@ div[class*=col]:nth-of-type(4n + 4) .teacher-item .teacher-thumb::before {
   border-radius: 50%;
   border: 8px solid #fff;
   max-width: 200px;
+  aspect-ratio: 1 / 1;
   margin: 0 auto 35px;
 }
 .teacher-item-2 .teacher-thumb .thumb a {
   display: block;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
@@ -4388,7 +4390,7 @@ div[class*=col]:nth-of-type(4n + 4) .teacher-item .teacher-thumb::before {
 .teacher-item-2 .teacher-thumb .thumb .teacher-photo-button {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   padding: 0;
   border: 0;
   overflow: hidden;
@@ -4398,6 +4400,8 @@ div[class*=col]:nth-of-type(4n + 4) .teacher-item .teacher-thumb::before {
 }
 .teacher-item-2 .teacher-thumb .thumb img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
@@ -4583,6 +4587,7 @@ div[class*=col]:nth-of-type(4n + 4) .teacher-item .teacher-thumb::before {
 }
 .lm-team-card-image {
   flex: 0 0 42%;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
 }
 .lm-team-card-image img {
@@ -4668,8 +4673,14 @@ div[class*=col]:nth-of-type(4n + 4) .teacher-item .teacher-thumb::before {
   .lm-team-grid {
     grid-template-columns: 1fr;
   }
+  .lm-team-card {
+    display: block;
+  }
   .lm-team-card-lead {
     grid-column: span 1;
+  }
+  .lm-team-card-image {
+    aspect-ratio: 16 / 10;
   }
   .lm-team-philosophy {
     grid-template-columns: 1fr;
@@ -4686,11 +4697,8 @@ div[class*=col]:nth-of-type(4n + 4) .teacher-item .teacher-thumb::before {
   .lm-team-heading h3 {
     font-size: 28px;
   }
-  .lm-team-card {
-    display: block;
-  }
   .lm-team-card-image {
-    height: 240px;
+    height: auto;
   }
   .lm-team-card-copy {
     padding: 24px;

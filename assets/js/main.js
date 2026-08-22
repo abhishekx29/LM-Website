@@ -39,13 +39,13 @@
       $grid.isotope({ filter: '.pagination-visible' });
 
       $pagination.find('li').remove();
-      $('<li><a href="#" data-page="previous"><i class="fas fa-angle-left"></i></a></li>')
+      $('<li><a  data-page="previous"><i class="fas fa-angle-left"></i></a></li>')
         .appendTo($pagination);
       for (var page = 1; page <= pageCount; page++) {
-        $('<li><a href="#" data-page="' + page + '">' + ('0' + page).slice(-2) + '</a></li>')
+        $('<li><a  data-page="' + page + '">' + ('0' + page).slice(-2) + '</a></li>')
           .appendTo($pagination);
       }
-      $('<li><a href="#" data-page="next"><i class="fas fa-angle-right"></i></a></li>')
+      $('<li><a  data-page="next"><i class="fas fa-angle-right"></i></a></li>')
         .appendTo($pagination);
       $pagination.find('a[data-page="' + currentPage + '"]').addClass('active');
     }
@@ -227,11 +227,327 @@
       $('.overlay').toggleClass('active');
       $('.menu').toggleClass('active');
     })
-    $('.search-button').on('click', function () {
+    var isPagesDirectory = window.location.pathname.indexOf('/pages/') !== -1;
+    var searchPathPrefix = isPagesDirectory ? '../' : '';
+    var searchablePages = [{
+        url: searchPathPrefix + 'index.html',
+        label: 'Home'
+      },
+      {
+        url: searchPathPrefix + 'about.html',
+        label: 'About'
+      },
+      {
+        url: searchPathPrefix + 'teacher.html',
+        label: 'Teachers'
+      },
+      {
+        url: searchPathPrefix + 'gallery.html',
+        label: 'Gallery'
+      },
+      {
+        url: searchPathPrefix + 'contact.html',
+        label: 'Contact'
+      },
+      {
+        url: searchPathPrefix + 'pages/class-schedule.html',
+        label: 'Class Schedule'
+      },
+      {
+        url: searchPathPrefix + 'pages/class-single.html',
+        label: 'Class Details'
+      },
+      {
+        url: searchPathPrefix + 'pages/faqs.html',
+        label: 'FAQs'
+      },
+      {
+        url: searchPathPrefix + 'pages/login.html',
+        label: 'Login'
+      },
+      {
+        url: searchPathPrefix + 'pages/registration.html',
+        label: 'Registration'
+      },
+      {
+        url: searchPathPrefix + 'pages/teacher1.html',
+        label: 'Teacher Profile'
+      }
+    ];
+    var searchIndexPromise;
+
+    function escapeHtml(text) {
+      return String(text || '').replace(/[&<>"']/g, function (character) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        } [character];
+      });
+    }
+
+    function getSearchResultsContainer() {
+      var $form = $('.header-form .form-container');
+      var $container = $form.find('.search-results');
+      if (!$container.length) {
+        $container = $('<div class="search-results" aria-live="polite"></div>');
+        $form.append($container);
+      }
+      return $container;
+    }
+
+    function showSearchMessage(message, modifierClass) {
+      var $container = getSearchResultsContainer();
+      $container.removeClass('has-results is-loading is-error').addClass(modifierClass || '');
+      $container.html('<p class="search-message">' + escapeHtml(message) + '</p>');
+    }
+
+    function buildSearchIndex() {
+      if (searchIndexPromise) {
+        return searchIndexPromise;
+      }
+
+      searchIndexPromise = Promise.all(searchablePages.map(function (page) {
+        return fetch(page.url, {
+            cache: 'force-cache'
+          })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error('Page unavailable');
+            }
+            return response.text();
+          })
+          .then(function (html) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(html, 'text/html');
+            var metaDescription = doc.querySelector('meta[name="description"]');
+            var headings = Array.prototype.map.call(doc.querySelectorAll('h1, h2, h3'), function (heading) {
+              return (heading.textContent || '').trim();
+            }).join(' ');
+            var bodyText = ((doc.body && doc.body.textContent) || '').replace(/\s+/g, ' ').trim();
+
+            return {
+              url: page.url,
+              label: page.label,
+              title: (doc.title || page.label || '').trim(),
+              description: metaDescription ? (metaDescription.getAttribute('content') || '').trim() : '',
+              headings: headings,
+              text: bodyText
+            };
+          })
+          .catch(function () {
+            return {
+              url: page.url,
+              label: page.label,
+              title: page.label,
+              description: '',
+              headings: '',
+              text: ''
+            };
+          });
+      })).then(function (pages) {
+        return pages;
+      });
+
+      return searchIndexPromise;
+    }
+
+    function scoreResult(page, terms) {
+      var title = page.title.toLowerCase();
+      var description = page.description.toLowerCase();
+      var headings = page.headings.toLowerCase();
+      var text = page.text.toLowerCase();
+      var fullText = [title, description, headings, text, page.url.toLowerCase(), page.label.toLowerCase()].join(' ');
+      var matchesAllTerms = terms.every(function (term) {
+        return fullText.indexOf(term) !== -1;
+      });
+
+      if (!matchesAllTerms) {
+        return -1;
+      }
+
+      var score = 0;
+      terms.forEach(function (term) {
+        if (title.indexOf(term) !== -1) {
+          score += 6;
+        }
+        if (headings.indexOf(term) !== -1) {
+          score += 4;
+        }
+        if (description.indexOf(term) !== -1) {
+          score += 3;
+        }
+        if (text.indexOf(term) !== -1) {
+          score += 1;
+        }
+      });
+
+      return score;
+    }
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function buildSnippet(source, terms) {
+      var normalizedSource = (source || '').replace(/\s+/g, ' ').trim();
+      if (!normalizedSource) {
+        return 'Open this page to view related content.';
+      }
+
+      var lowerSource = normalizedSource.toLowerCase();
+      var firstMatchIndex = -1;
+      terms.forEach(function (term) {
+        var currentIndex = lowerSource.indexOf(term);
+        if (currentIndex !== -1 && (firstMatchIndex === -1 || currentIndex < firstMatchIndex)) {
+          firstMatchIndex = currentIndex;
+        }
+      });
+
+      var snippetLength = 180;
+      var start = firstMatchIndex > -1 ? Math.max(0, firstMatchIndex - 45) : 0;
+      var end = Math.min(normalizedSource.length, start + snippetLength);
+      var snippet = normalizedSource.slice(start, end).trim();
+
+      if (start > 0) {
+        snippet = '... ' + snippet;
+      }
+      if (end < normalizedSource.length) {
+        snippet += ' ...';
+      }
+
+      return snippet;
+    }
+
+    function highlightText(text, terms) {
+      var uniqueTerms = terms.filter(function (term, index, collection) {
+        return collection.indexOf(term) === index;
+      }).sort(function (a, b) {
+        return b.length - a.length;
+      });
+
+      if (!uniqueTerms.length) {
+        return escapeHtml(text);
+      }
+
+      var highlightPattern = new RegExp('(' + uniqueTerms.map(escapeRegExp).join('|') + ')', 'ig');
+      var html = '';
+      var lastIndex = 0;
+
+      text.replace(highlightPattern, function (match) {
+        var offset = arguments[arguments.length - 2];
+        html += escapeHtml(text.slice(lastIndex, offset));
+        html += '<mark class="search-highlight">' + escapeHtml(match) + '</mark>';
+        lastIndex = offset + match.length;
+        return match;
+      });
+
+      html += escapeHtml(text.slice(lastIndex));
+      return html;
+    }
+
+    function renderSearchResults(results, query, terms) {
+      var $container = getSearchResultsContainer();
+
+      if (!results.length) {
+        $container.removeClass('has-results is-loading').addClass('is-error');
+        $container.html('<p class="search-message">No results found for "' + escapeHtml(query) + '".</p>');
+        return;
+      }
+
+      var listHtml = results.map(function (result) {
+        var snippetSource = result.description || result.headings || result.text;
+        var snippet = buildSnippet(snippetSource, terms);
+        var highlightedSnippet = highlightText(snippet, terms);
+        var highlightedTitle = highlightText((result.title || result.label), terms);
+
+        return '<li class="search-result-item">' +
+          '<a href="' + escapeHtml(result.url) + '">' +
+          '<span class="search-result-title">' + highlightedTitle + '</span>' +
+          '<span class="search-result-url">' + escapeHtml(result.url.replace(/^\.\//, '')) + '</span>' +
+          '<span class="search-result-snippet">' + highlightedSnippet + '</span>' +
+          '</a>' +
+          '</li>';
+      }).join('');
+
+      $container.removeClass('is-loading is-error').addClass('has-results');
+      $container.html('<ul class="search-result-list">' + listHtml + '</ul>');
+    }
+
+    $('.search-button, .search-button a').on('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
       $('.header-form').addClass('active');
+      $('.header-form input[name="name"]').trigger('focus');
     })
-    $('.header-form .bg-lay').on('click', function () {
+    $('.header-form .bg-lay, .header-form .cross').on('click', function (e) {
+      e.preventDefault();
       $('.header-form').removeClass('active');
+    })
+    $('.header-form .form-container').on('click', function (e) {
+      e.stopPropagation();
+    })
+    $(document).on('keydown', function (e) {
+      if (e.key === 'Escape') {
+        $('.header-form').removeClass('active');
+      }
+    })
+    $('.header-form .form-container').on('submit', function (e) {
+      e.preventDefault();
+
+      var query = $.trim($(this).find('input[name="name"]').val());
+      var normalizedQuery = query.toLowerCase();
+      var terms = query.toLowerCase().split(/\s+/).filter(function (term) {
+        return term.length > 1;
+      });
+
+      var wantsSchoolImages = (
+        /\bschool\b/.test(normalizedQuery) &&
+        /\b(images?|photos?|pictures?|pics?|gallery)\b/.test(normalizedQuery)
+      ) || /\bschool\s+(images?|photos?|pictures?|pics?)\b/.test(normalizedQuery);
+
+      if (wantsSchoolImages) {
+        window.location.href = searchPathPrefix + 'gallery.html';
+        return;
+      }
+
+      if (!query) {
+        showSearchMessage('Type something to search the website.', 'is-error');
+        return;
+      }
+
+      if (!terms.length) {
+        showSearchMessage('Please enter at least 2 characters.', 'is-error');
+        return;
+      }
+
+      showSearchMessage('Searching pages...', 'is-loading');
+
+      buildSearchIndex().then(function (index) {
+        var results = index
+          .map(function (page) {
+            return {
+              score: scoreResult(page, terms),
+              page: page
+            };
+          })
+          .filter(function (result) {
+            return result.score > -1;
+          })
+          .sort(function (a, b) {
+            return b.score - a.score;
+          })
+          .slice(0, 8)
+          .map(function (result) {
+            return result.page;
+          });
+
+        renderSearchResults(results, query, terms);
+      }).catch(function () {
+        showSearchMessage('Search is temporarily unavailable. Please try again.', 'is-error');
+      });
     })
     //Cart Button
     $('.cart-button, .side-sidebar-close-btn').on('click', function () {
